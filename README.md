@@ -2,7 +2,7 @@
 
 Playground for haskell and SFML
 
-## build & Playground
+## build & run
 
     stack build
     stack exec Sokoban
