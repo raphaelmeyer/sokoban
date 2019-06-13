@@ -1,0 +1,5 @@
+system-ghc: false
+resolver: lts-13.25
+extra-deps:
+  - github: SFML-haskell/SFML
+    commit: 1d1ceee6bc782f4f194853fbd0cc4acb33b86d41
