@@ -1,48 +1,54 @@
 module Sokoban (run) where
 
-import SFML.Graphics
-import SFML.Window
+import qualified SFML.Graphics as Sf
+import qualified SFML.Window as Sf
 
-data GameState = GameState
+data GameState = GameState {
+  getFigPos :: (Int,Int)
+}
 
-data Objects = Objects {
-  window :: RenderWindow,
-  figure :: RectangleShape
+data Graphics = Graphics {
+  getWindow :: Sf.RenderWindow,
+  getFigure :: Sf.RectangleShape
 }
 
 run :: IO ()
 run = do
-  let game = GameState
-  let context = Just $ ContextSettings 24 8 0 1 2 [ContextDefault]
-  wnd <- createRenderWindow (VideoMode 640 480 32) "SFML Haskell Demo" [SFDefaultStyle] context
-  fig <- err $ createRectangleShape
-  setFillColor fig blue
-  setPosition fig $ Vec2f 320 240
-  setSize fig $ Vec2f 64 64
-  let objects = Objects wnd fig
-  loop objects game
-  destroy wnd
+  let game = GameState (5,5)
+  let context = Just $ Sf.ContextSettings 24 8 0 1 2 [Sf.ContextDefault]
+  window <- Sf.createRenderWindow (Sf.VideoMode 640 480 32) "SFML Haskell Demo" [Sf.SFDefaultStyle] context
+  figure <- Sf.err Sf.createRectangleShape
+  Sf.setFillColor figure Sf.blue
+  Sf.setSize figure $ Sf.Vec2f 64 64
+  let graphics = Graphics window figure
+  loop graphics game
+  Sf.destroy figure
+  Sf.destroy window
 
-loop :: Objects -> GameState -> IO ()
-loop objects game = do
-  let wnd = window objects
-  let fig = figure objects
-  result <- processEvents wnd game
+loop :: Graphics -> GameState -> IO ()
+loop graphics game = do
+  let window = getWindow graphics
+  result <- processEvents window game
   case result of
     Nothing -> return ()
     Just game' -> do
-      clearRenderWindow wnd $ Color 240 240 240 255
-      drawRectangle wnd fig Nothing
-      display wnd
-      loop objects game'
+      let figure = getFigure graphics
+      Sf.clearRenderWindow window $ Sf.Color 240 240 240 255
+      Sf.setPosition figure $ figurePosition game'
+      Sf.drawRectangle window (getFigure graphics) Nothing
+      Sf.display window
+      loop graphics game'
 
-processEvents :: RenderWindow -> GameState -> IO (Maybe GameState)
-processEvents wnd game = do
-  event <- pollEvent wnd
+processEvents :: Sf.RenderWindow -> GameState -> IO (Maybe GameState)
+processEvents window game = do
+  event <- Sf.pollEvent window
   case event of
-    Just SFEvtClosed -> return Nothing
-    Just SFEvtKeyPressed{code = key} -> case key of
-      KeyEscape -> return Nothing
-      _ -> processEvents wnd game
+    Just Sf.SFEvtClosed -> return Nothing
+    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyEscape} -> return Nothing
     Nothing -> return . Just $ game
-    _ -> processEvents wnd game
+    _ -> processEvents window game
+
+figurePosition :: GameState -> Sf.Vec2f
+figurePosition game =
+  let (x,y) = getFigPos game
+  in Sf.Vec2f (fromIntegral $ 64 * x) (fromIntegral $ 64 * y)
