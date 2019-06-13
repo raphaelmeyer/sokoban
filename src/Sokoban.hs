@@ -4,7 +4,7 @@ import qualified SFML.Graphics as Sf
 import qualified SFML.Window as Sf
 
 data GameState = GameState {
-  getFigPos :: (Int,Int)
+  getPosition :: (Int,Int)
 }
 
 data Graphics = Graphics {
@@ -45,10 +45,14 @@ processEvents window game = do
   case event of
     Just Sf.SFEvtClosed -> return Nothing
     Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyEscape} -> return Nothing
+    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyDown} -> return . Just $ moveDown game
     Nothing -> return . Just $ game
     _ -> processEvents window game
 
 figurePosition :: GameState -> Sf.Vec2f
 figurePosition game =
-  let (x,y) = getFigPos game
+  let (x,y) = getPosition game
   in Sf.Vec2f (fromIntegral $ 64 * x) (fromIntegral $ 64 * y)
+
+moveDown :: GameState -> GameState
+moveDown game = GameState . ( \(x,y) -> (x,y+1) ) $ getPosition game
