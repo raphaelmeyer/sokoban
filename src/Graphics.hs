@@ -1,4 +1,10 @@
-module Graphics where
+module Graphics (
+  Graphics(..),
+  initialize,
+  cleanup,
+  render,
+  processEvents
+) where
 
 import qualified SFML.Graphics as Sf
 import qualified SFML.Window as Sf

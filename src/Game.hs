@@ -1,4 +1,9 @@
-module Game where
+module Game (
+  GameState(..),
+  Event(..),
+  Events,
+  updateGame
+) where
 
 data GameState = GameState {
   getPosition :: (Int,Int)
