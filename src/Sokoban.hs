@@ -12,7 +12,7 @@ run = do
 
 loop :: Graphics -> GameState -> IO ()
 loop graphics game = do
-  result <- processEvents $ getWindow graphics
+  result <- processEvents graphics
   case result of
     Nothing -> return ()
     Just events -> do

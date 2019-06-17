@@ -1,5 +1,5 @@
 module Graphics (
-  Graphics(..),
+  Graphics,
   initialize,
   cleanup,
   render,
@@ -34,23 +34,23 @@ render :: Graphics -> GameState -> IO ()
 render graphics game = do
   let figure = getFigure graphics
   let window = getWindow graphics
-  Sf.clearRenderWindow window $ Sf.Color 240 240 240 255
+  Sf.clearRenderWindow window $ Sf.white
   Sf.setPosition figure $ figurePosition game
   Sf.drawRectangle window (getFigure graphics) Nothing
   Sf.display window
 
-processEvents :: Sf.RenderWindow -> IO (Maybe Events)
-processEvents window = do
-  event <- Sf.pollEvent window
+processEvents :: Graphics -> IO (Maybe Events)
+processEvents graphics = do
+  event <- Sf.pollEvent $ getWindow graphics
   case event of
     Just Sf.SFEvtClosed -> return Nothing
     Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyEscape} -> return Nothing
-    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyDown} -> fmap (MoveDown:) <$> processEvents window
-    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyUp} -> fmap (MoveUp:) <$> processEvents window
-    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyLeft} -> fmap (MoveLeft:) <$> processEvents window
-    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyRight} -> fmap (MoveRight:) <$> processEvents window
+    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyDown} -> fmap (MoveDown:) <$> processEvents graphics
+    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyUp} -> fmap (MoveUp:) <$> processEvents graphics
+    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyLeft} -> fmap (MoveLeft:) <$> processEvents graphics
+    Just Sf.SFEvtKeyPressed{Sf.code = Sf.KeyRight} -> fmap (MoveRight:) <$> processEvents graphics
     Nothing -> return (Just [])
-    _ -> processEvents window
+    _ -> processEvents graphics
 
 figurePosition :: GameState -> Sf.Vec2f
 figurePosition game =
