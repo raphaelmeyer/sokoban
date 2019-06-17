@@ -1,6 +1,8 @@
 name: Sokoban
 version: 0.0.0.1
 license: MIT
+data-dir: assets
+data-files: sokoban_tilesheet.png
 
 dependencies:
   - base
@@ -13,4 +15,3 @@ executables:
     ghc-options:
       - -Wall
       - -Werror
-
