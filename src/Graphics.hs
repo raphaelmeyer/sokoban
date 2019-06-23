@@ -19,6 +19,8 @@ data Graphics = Graphics {
   getTilesheet :: Sf.Texture
 }
 
+data Sprite = FigureUp | FigureDown | FigureLeft | FigureRight | Box | Ground | Wall
+
 initialize :: IO Graphics
 initialize = do
   let context = Just $ Sf.ContextSettings 24 8 0 1 2 [Sf.ContextDefault]
@@ -28,7 +30,7 @@ initialize = do
   figure <- Sf.err Sf.createRectangleShape
   Sf.setSize figure $ Sf.Vec2f 64 64
   Sf.setTexture figure tilesheet True
-  Sf.setTextureRect figure $ Sf.IntRect 0 256 64 64
+  Sf.setTextureRect figure $ tile FigureUp
   return $ Graphics window figure tilesheet
 
 cleanup :: Graphics -> IO ()
@@ -42,6 +44,7 @@ render graphics game = do
   let figure = getFigure graphics
   let window = getWindow graphics
   Sf.clearRenderWindow window Sf.white
+  Sf.setTextureRect figure $ figureTile game
   Sf.setPosition figure $ figurePosition game
   Sf.drawRectangle window (getFigure graphics) Nothing
   Sf.display window
@@ -63,3 +66,22 @@ figurePosition :: GameState -> Sf.Vec2f
 figurePosition game =
   let (x,y) = getPosition game
   in Sf.Vec2f (fromIntegral $ 64 * x) (fromIntegral $ 64 * y)
+
+figureTile :: GameState -> Sf.IntRect
+figureTile game = case getDirection game of
+  LookDown -> tile FigureDown
+  LookUp -> tile FigureUp
+  LookLeft -> tile FigureLeft
+  LookRight -> tile FigureRight
+
+tile :: Sprite -> Sf.IntRect
+tile sprite = Sf.IntRect (64*x) (64*y) 64 64
+  where
+    (x,y) = case sprite of
+      FigureUp -> (3, 5)
+      FigureDown -> (0, 5)
+      FigureLeft -> (4, 7)
+      FigureRight -> (1, 7)
+      Box -> (1,0)
+      Ground -> (11,6)
+      Wall -> (8,6)

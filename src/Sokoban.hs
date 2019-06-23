@@ -5,7 +5,7 @@ import Graphics
 
 run :: IO ()
 run = do
-  let game = GameState (5,5)
+  let game = createGame
   graphics <- initialize
   loop graphics game
   cleanup graphics
